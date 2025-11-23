@@ -51,7 +51,7 @@ Gestara - Indian Sign Language Recognition System
  Step 1: Clone Repository
 
 
-git clone https://github.com/yourusername/gestara-isl.git
+git clone https://github.com/HACK-A-DAY-Online-Participants/Gestara-AI
 cd gestara-isl
 
 
