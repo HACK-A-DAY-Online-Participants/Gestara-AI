@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Text to ISL Signs — GESTARA</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" type="image/png" href="favicon.png">
+  <style>
+    /* Custom styles for GIF Grid */
+    .gifs-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+    }
+
+    .gif-card {
+        background: #fff;
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid #eee;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        transition: transform 0.2s;
+    }
+
+    .gif-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    }
+
+    .gif-card img {
+        width: 100%;
+        display: block;
+        background: #f0f0f0;
+        aspect-ratio: 4/3;
+        object-fit: cover;
+    }
+
+    .gif-label {
+        padding: 10px;
+        text-align: center;
+        font-weight: 600;
+        color: var(--deep, #333);
+        font-size: 0.95rem;
+        background: white;
+        border-top: 1px solid #f0f0f0;
+    }
+
+    /* Input Text Area specific */
+    textarea.text-input {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-family: inherit;
+        resize: vertical;
+        box-sizing: border-box;
+        min-height: 80px;
+    }
+
+    /* Word Tags specific */
+    .word-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 1rem;
+    }
+
+    .word-tag {
+        background: #eee;
+        color: #333;
+        padding: 6px 12px;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 0.9rem;
+    }
+
+    .word-tag:hover {
+        background: var(--accent, #FF6B6B);
+        color: white;
+    }
+    
+    .placeholder {
+        text-align: center;
+        color: #999;
+        padding: 2rem;
+        background: #f9f9f9;
+        border-radius: 8px;
+        font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="header container" role="banner">
+    <div class="brand" tabindex="0">
+      <div class="logo" aria-hidden="true">GA</div>
+      <div>
+        <div style="font-weight:700; color:var(--deep)">GESTARA</div>
+        <div class="kv">Text to Sign</div>
+      </div>
+    </div>
+    <nav role="navigation" aria-label="Primary navigation" style="margin-top:12px">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="recognition.html">ISL</a></li>
+        <li><a href="text_to_sign.html" aria-current="page" style="font-weight:700">Text to Sign</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main id="main" class="container" role="main">
+    <h1 id="tts-title">Convert Text to ISL</h1>
+    
+    <section class="hero-card" style="margin-bottom: 24px;">
+      <div style="display:flex; flex-direction:column; gap:16px;">
+        <div>
+            <h3>Enter Message</h3>
+            <p class="kv">Type sentences and see them in animated ISL signs.</p>
+        </div>
+        
+        <textarea 
+            id="text-input" 
+            class="text-input" 
+            rows="3" 
+            placeholder="Type your message here (e.g., 'hello good morning')..."
+        ></textarea>
+        
+        <button class="btn" id="convert-btn" style="align-self: flex-start;"> Convert to Sign Language</button>
+      </div>
+      
+      <div style="margin-top: 24px; border-top: 1px solid #eee; padding-top: 16px;">
+         <h4 style="margin:0 0 8px 0; color:#666;">Quick Add Words:</h4>
+         <div class="word-tags" id="word-tags">
+            <div style="color:#999; font-size:0.9rem;">Loading available words...</div>
+         </div>
+      </div>
+    </section>
+
+    <section class="hero-card">
+      <h3>ISL Sign Animations</h3>
+      <div id="parsed-words" style="margin: 1rem 0; color: var(--accent, #FF6B6B); font-weight: 600;"></div>
+      
+      <div class="gifs-grid" id="gifs-grid">
+          <div class="placeholder" style="grid-column: 1/-1;">
+              Enter text and click "Convert" to see animated signs
+          </div>
+      </div>
+    </section>
+
+    <footer style="margin-top:18px">
+      <a class="btn secondary" href="index.html">Back to Home</a>
+    </footer>
+  </main>
+
+  <footer style="margin-top: 2rem; text-align:center; color: #666; padding-bottom: 2rem;">
+      <small>&copy; 2025 Gestara - Bridging communication through AI</small>
+  </footer>
+
+  <script>
+        const API = 'http://localhost:5000';
+        
+        class TextToISL {
+            constructor() {
+                this.init();
+                this.loadAvailableWords();
+            }
+            
+            init() {
+                document.getElementById('convert-btn').onclick = () => this.convert();
+                
+                document.getElementById('text-input').addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter' && e.ctrlKey) {
+                        this.convert();
+                    }
+                });
+            }
+            
+            async loadAvailableWords() {
+                try {
+                    const res = await fetch(API + '/available-words');
+                    const data = await res.json();
+                    
+                    if (data.success) {
+                        this.displayWordTags(data.words);
+                    }
+                } catch (e) {
+                    console.error('Error loading words:', e);
+                }
+            }
+            
+            displayWordTags(words) {
+                const container = document.getElementById('word-tags');
+                container.innerHTML = '';
+                
+                words.forEach(word => {
+                    const tag = document.createElement('span');
+                    tag.className = 'word-tag';
+                    tag.textContent = word;
+                    tag.onclick = () => this.useWord(word);
+                    container.appendChild(tag);
+                });
+            }
+            
+            useWord(word) {
+                const input = document.getElementById('text-input');
+                input.value += (input.value ? ' ' : '') + word;
+            }
+            
+            async convert() {
+                const text = document.getElementById('text-input').value.trim();
+                
+                if (!text) {
+                    alert('Please enter some text');
+                    return;
+                }
+                
+                const btn = document.getElementById('convert-btn');
+                btn.textContent = ' Converting...';
+                btn.disabled = true;
+                
+                try {
+                    const res = await fetch(API + '/text-to-sign', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ text: text })
+                    });
+                    
+                    const data = await res.json();
+                    
+                    if (data.success) {
+                        this.displayGifs(data);
+                    } else {
+                        alert('Error: ' + (data.error || 'Unknown error'));
+                    }
+                } catch (e) {
+                    alert('Error: ' + e.message);
+                } finally {
+                    btn.textContent = '汐 Convert to Sign Language';
+                    btn.disabled = false;
+                }
+            }
+            
+            displayGifs(data) {
+                const parsedWords = document.getElementById('parsed-words');
+                parsedWords.textContent = `Parsed: ${data.words.join(' 竊')}`;
+                
+                const grid = document.getElementById('gifs-grid');
+                grid.innerHTML = '';
+                
+                data.videos.forEach((item) => {
+                    const card = document.createElement('div');
+                    card.className = 'gif-card';
+                    
+                    // Replace .mp4 with .gif if needed
+                    let gifPath = item.video;
+                    if (gifPath && gifPath.includes('.mp4')) {
+                        gifPath = gifPath.replace('.mp4', '.gif').replace('videos/', 'gifs/');
+                    }
+                    
+                    if (gifPath && !item.error) {
+                        card.innerHTML = `
+                            <img src="${gifPath}" alt="${item.word}">
+                            <div class="gif-label">${item.word}</div>
+                        `;
+                    } else {
+                        card.innerHTML = `
+                            <div style="padding: 3rem; text-align: center; color: #999;">
+                                Sign not available
+                            </div>
+                            <div class="gif-label">${item.word}</div>
+                        `;
+                    }
+                    
+                    grid.appendChild(card);
+                });
+            }
+        }
+        
+        new TextToISL();
+    </script>
+</body>
+</html>

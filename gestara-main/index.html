@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>GESTARA — Home</title>
+<link rel="stylesheet" href="styles.css" />
+  <link rel="icon" type="image/png" href="favicon.png">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="header container" role="banner" aria-label="Site header">
+    <div class="brand" tabindex="0">
+      <div class="logo" aria-hidden="true">GA</div>
+      <div>
+        <div style="font-weight:700; color:var(--deep)">GESTARA</div>
+        <div class="kv">Bridging communication for deaf & hard of hearing community</div>
+      </div>
+    </div>
+
+    <nav role="navigation" aria-label="Primary navigation" style="margin-top:12px">
+      <ul>
+        <li><a href="index.html"aria-current="page" style="font-weight:700">Home</a></li>
+        <li><a href="recognition.html">ISL</a></li>
+        <li><a href="text_to_sign.html">Text-TO-Sign</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main id="main" class="container" role="main" aria-labelledby="home-title">
+    <section class="hero">
+      <div class="hero-card" aria-labelledby="home-title">
+        <h1 id="home-title">Accessible communication for everyone</h1>
+        <p class="lead">A friendly, secure landing point for ISL, live captions, and assistive utilities—designed for keyboard and screen reader users.</p>
+        <div class="cta-row" role="region" aria-label="Primary actions">
+          <a class="btn" href="recognition.html">Try Captions Demo</a>
+        </div>
+
+        <div class="controls" style="margin-top:12px">
+          <button id="toggle-contrast" class="btn secondary" aria-pressed="false">Toggle Contrast (c)</button>
+          <button id="font-increase" class="btn secondary" aria-label="Increase text size">A+</button>
+          <button id="font-decrease" class="btn secondary" aria-label="Decrease text size">A−</button>
+          <button id="toggle-motion" class="btn secondary" aria-pressed="false">Reduced Motion (m)</button>
+        </div>
+
+        <div class="kv" style="margin-top:12px">Tip: keyboard shortcuts — c = contrast, + = larger text, - = smaller text, m = reduced motion</div>
+      </div>
+
+     
+    </section>
+
+    <section>
+      <h2>Key features</h2>
+      <div class="features" role="list">
+        <article class="feature" role="listitem" tabindex="0">
+          <h3>Live captions</h3>
+          <p class="kv">Simulated demo page for live captioning workflows.</p>
+        </article>
+        <article class="feature" role="listitem" tabindex="0">
+          <h3>ISL support</h3>
+          <p class="kv">Dedicated ISL demo with clear ARIA patterns and keyboard controls.</p>
+        </article>
+        <article class="feature" role="listitem" tabindex="0">
+          <h3>Accessibility toolkit</h3>
+          <p class="kv">Contrast toggle, font scaling, reduced motion — saved per user.</p>
+        </article>
+      </div>
+    </section>
+
+    <footer>
+      <p class="kv">Built with accessibility-first principles • Demo site</p>
+    </footer>
+  </main>
+
+  <script src="script.js" defer></script>
+</body>
+</html>
